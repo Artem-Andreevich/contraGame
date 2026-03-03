@@ -21,8 +21,8 @@ export default class Game {
 
     const platformFactory = new PlatformFactory(this.#pixiApp)
 
-    this.#platforms.push(platformFactory.createPlatform({x: 100, y: 450}))
-    this.#platforms.push(platformFactory.createPlatform({x: 400, y: 520}))
+    this.#platforms.push(platformFactory.createPlatform({x: 100, y: 450}, { width: 10 }))
+    this.#platforms.push(platformFactory.createPlatform({x: 400, y: 520}, { color: 0xff0000}))
     this.#platforms.push(platformFactory.createPlatform({x: 600, y: 450}))
 
     this.keyboardProcessor = new KeyboardProcessor()

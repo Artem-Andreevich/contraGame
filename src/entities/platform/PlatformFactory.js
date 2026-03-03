@@ -6,12 +6,10 @@ export default class PlatformFactory {
 
   constructor(pixiApp) {
     this.#pixiApp = pixiApp
-    console.log(this.#pixiApp);
-
   }
 
-  createPlatform(position) {
-    const platform = new Platform()
+  createPlatform(position, params = {}) {
+    const platform = new Platform(params)
     platform.x = position.x
     platform.y = position.y
 
