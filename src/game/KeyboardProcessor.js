@@ -1,5 +1,4 @@
 export default class KeyboardProcessor {
-
   #keyMap = {
     KeyS: {
       isDown: false,
@@ -19,37 +18,33 @@ export default class KeyboardProcessor {
     ArrowDown: {
       isDown: false,
     },
-  }
-
-  constructor() {
-
-  }
+  };
 
   getButton(keyCode) {
-    return this.#keyMap[keyCode] || {}
+    return this.#keyMap[keyCode] || {};
   }
 
   onKeyDown(key) {
-    const button = this.getButton(key.code)
-    
-    if(button && button.hasOwnProperty("executeDown")) {
-      button.executeDown()
+    const button = this.getButton(key.code);
+
+    if (button && Object.prototype.hasOwnProperty.call(button, 'executeDown')) {
+      button.executeDown();
     }
 
-    button.isDown = true
+    button.isDown = true;
   }
-  
-  onKeyUp(key) {
-    const button = this.getButton(key.code)
 
-    if(button && button.hasOwnProperty("executeUp")) {
-      button.executeUp()
+  onKeyUp(key) {
+    const button = this.getButton(key.code);
+
+    if (button && Object.prototype.hasOwnProperty.call(button, 'executeUp')) {
+      button.executeUp();
     }
 
-    button.isDown = false
+    button.isDown = false;
   }
 
   isButtonPressed(keyCode) {
-    return this.getButton(keyCode).isDown
+    return this.getButton(keyCode).isDown;
   }
 }

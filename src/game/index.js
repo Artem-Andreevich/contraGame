@@ -1,66 +1,61 @@
-import Hero from "../entities/hero"
-import PlatformFactory from "../entities/platform/PlatformFactory"
-import KeyboardProcessor from "./KeyboardProcessor"
+import Hero from '../entities/hero';
+import PlatformFactory from '../entities/platform/PlatformFactory';
+
+import KeyboardProcessor from './KeyboardProcessor';
 
 export default class Game {
+  #pixiApp;
+  #hero;
+  #platforms = [];
 
-  #pixiApp
-  #hero
-  #platforms = []
-
-  keyboardProcessor
+  keyboardProcessor;
 
   constructor(app) {
+    this.#pixiApp = app;
 
-    this.#pixiApp = app
+    this.#hero = new Hero();
+    this.#hero.x = 100;
+    this.#hero.y = 100;
+    this.#pixiApp.stage.addChild(this.#hero);
 
-    this.#hero = new Hero()
-    this.#hero.x = 100
-    this.#hero.y = 100
-    this.#pixiApp.stage.addChild(this.#hero)
+    const platformFactory = new PlatformFactory(this.#pixiApp);
 
-    const platformFactory = new PlatformFactory(this.#pixiApp)
+    this.#platforms.push(platformFactory.createPlatform({ x: 100, y: 450 }, { width: 10 }));
+    this.#platforms.push(platformFactory.createPlatform({ x: 400, y: 520 }, { color: 0xff0000 }));
+    this.#platforms.push(platformFactory.createPlatform({ x: 600, y: 450 }));
 
-    this.#platforms.push(platformFactory.createPlatform({x: 100, y: 450}, { width: 10 }))
-    this.#platforms.push(platformFactory.createPlatform({x: 400, y: 520}, { color: 0xff0000}))
-    this.#platforms.push(platformFactory.createPlatform({x: 600, y: 450}))
-
-    this.keyboardProcessor = new KeyboardProcessor()
+    this.keyboardProcessor = new KeyboardProcessor();
 
     this.keyboardProcessor.getButton('KeyS').executeDown = () => {
-      this.#hero.jump()
-    }
+      this.#hero.jump();
+    };
     this.keyboardProcessor.getButton('ArrowLeft').executeDown = () => {
-      this.#hero.startLeftMove()
-    }
+      this.#hero.startLeftMove();
+    };
     this.keyboardProcessor.getButton('ArrowLeft').executeUp = () => {
-      this.#hero.stopLeftMove()
-    }
+      this.#hero.stopLeftMove();
+    };
     this.keyboardProcessor.getButton('ArrowRight').executeDown = () => {
-      this.#hero.startRightMove()
-    }
+      this.#hero.startRightMove();
+    };
     this.keyboardProcessor.getButton('ArrowRight').executeUp = () => {
-      this.#hero.stopRightMove()
-    }
+      this.#hero.stopRightMove();
+    };
   }
 
   update() {
     const prevPoint = {
       x: this.#hero.x,
-      y: this.#hero.y
-    }
+      y: this.#hero.y,
+    };
 
-    this.#hero.update()
+    this.#hero.update();
 
-    for(let i = 0; i < this.#platforms.length; i++) {
-      const collisionResult = this.getPlatformCollisionResult(
-        this.#hero,
-        this.#platforms[i],
-        prevPoint
-      )
-      
-      if(collisionResult.vertical) {
-        this.#hero.stay()
+    for (let i = 0; i < this.#platforms.length; i++) {
+      const collisionResult = this.getPlatformCollisionResult(this.#hero, this.#platforms[i], prevPoint);
+
+      if (collisionResult.vertical) {
+        this.#hero.stay();
       }
     }
   }
@@ -69,33 +64,35 @@ export default class Game {
     const collisionResult = {
       horizontal: false,
       vertical: false,
+    };
+
+    if (!this.isCheckAABB(entity, platform)) {
+      return collisionResult;
     }
 
-    if(!this.isCheckAABB(entity, platform)) {
-      return collisionResult
-    }
-    
-    const currY = entity.y
-    entity.y = prevPoint.y
-    
-    if(!this.isCheckAABB(entity, platform)) {
-      collisionResult.vertical = true
-      return collisionResult
-    }
+    const currY = entity.y;
+    // eslint-disable-next-line no-param-reassign
+    entity.y = prevPoint.y;
 
-    entity.y = currY
-    entity.x = prevPoint.x
+    if (!this.isCheckAABB(entity, platform)) {
+      collisionResult.vertical = true;
+      return collisionResult;
+    }
+    // eslint-disable-next-line no-param-reassign
+    entity.y = currY;
+    // eslint-disable-next-line no-param-reassign
+    entity.x = prevPoint.x;
 
-    collisionResult.horizontal = true
-    return collisionResult
+    collisionResult.horizontal = true;
+    return collisionResult;
   }
 
   isCheckAABB(entity, area) {
     return (
-      entity.x < area.x + area.width
-      && entity.x + entity.width > area.x
-      && entity.y < area.y + area.height
-      && entity.y + entity.height > area.y
-    )
+      entity.x < area.x + area.width &&
+      entity.x + entity.width > area.x &&
+      entity.y < area.y + area.height &&
+      entity.y + entity.height > area.y
+    );
   }
 }
