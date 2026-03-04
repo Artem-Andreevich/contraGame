@@ -7,7 +7,10 @@
     "start": "npm run dev",
     "build": "npm run lint && vite build",
     "lint": "eslint .",
-    "dev": "vite"
+    "dev": "vite",
+    "prepare": "husky install",
+    "type-check": "tsc --noEmit",
+    "lint-staged": "lint-staged"
   },
   "dependencies": {
     "pixi.js": "^8.16.0"
@@ -23,6 +26,8 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "globals": "^17.4.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^16.3.2",
     "prettier": "^3.5.3",
     "typescript": "4.9.4",
     "typescript-eslint": "^8.33.1",
