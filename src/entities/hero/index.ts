@@ -2,7 +2,7 @@ import { Container, Graphics } from 'pixi.js';
 
 export enum HERO_STATE {
   STAY = 'stay',
-  JUMP = 'jump',
+  // JUMP = 'jump',
 }
 
 type TDirectionContext = {
