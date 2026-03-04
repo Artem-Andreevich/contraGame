@@ -1,61 +1,63 @@
+import type { Application } from 'pixi.js';
+
 import Hero from '../entities/hero';
 import PlatformFactory from '../entities/platform/PlatformFactory';
 
 import KeyboardProcessor from './KeyboardProcessor';
 
 export default class Game {
-  #pixiApp;
-  #hero;
-  #platforms = [];
+  private pixiApp: Application;
+  private hero: Hero;
+  private platforms = [];
 
-  keyboardProcessor;
+  public keyboardProcessor: KeyboardProcessor;
 
-  constructor(app) {
-    this.#pixiApp = app;
+  constructor(app: Application) {
+    this.pixiApp = app;
 
-    this.#hero = new Hero();
-    this.#hero.x = 100;
-    this.#hero.y = 100;
-    this.#pixiApp.stage.addChild(this.#hero);
+    this.hero = new Hero();
+    this.hero.x = 100;
+    this.hero.y = 100;
+    this.pixiApp.stage.addChild(this.hero);
 
-    const platformFactory = new PlatformFactory(this.#pixiApp);
+    const platformFactory = new PlatformFactory(this.pixiApp);
 
-    this.#platforms.push(platformFactory.createPlatform({ x: 100, y: 450 }, { width: 10 }));
-    this.#platforms.push(platformFactory.createPlatform({ x: 400, y: 520 }, { color: 0xff0000 }));
-    this.#platforms.push(platformFactory.createPlatform({ x: 600, y: 450 }));
+    this.platforms.push(platformFactory.createPlatform({ x: 100, y: 450 }, { width: 10 }));
+    this.platforms.push(platformFactory.createPlatform({ x: 400, y: 520 }, { color: 0xff0000 }));
+    this.platforms.push(platformFactory.createPlatform({ x: 600, y: 450 }));
 
     this.keyboardProcessor = new KeyboardProcessor();
 
     this.keyboardProcessor.getButton('KeyS').executeDown = () => {
-      this.#hero.jump();
+      this.hero.jump();
     };
     this.keyboardProcessor.getButton('ArrowLeft').executeDown = () => {
-      this.#hero.startLeftMove();
+      this.hero.startLeftMove();
     };
     this.keyboardProcessor.getButton('ArrowLeft').executeUp = () => {
-      this.#hero.stopLeftMove();
+      this.hero.stopLeftMove();
     };
     this.keyboardProcessor.getButton('ArrowRight').executeDown = () => {
-      this.#hero.startRightMove();
+      this.hero.startRightMove();
     };
     this.keyboardProcessor.getButton('ArrowRight').executeUp = () => {
-      this.#hero.stopRightMove();
+      this.hero.stopRightMove();
     };
   }
 
-  update() {
+  public update(): void {
     const prevPoint = {
-      x: this.#hero.x,
-      y: this.#hero.y,
+      x: this.hero.x,
+      y: this.hero.y,
     };
 
-    this.#hero.update();
+    this.hero.update();
 
-    for (let i = 0; i < this.#platforms.length; i++) {
-      const collisionResult = this.getPlatformCollisionResult(this.#hero, this.#platforms[i], prevPoint);
+    for (let i = 0; i < this.platforms.length; i++) {
+      const collisionResult = this.getPlatformCollisionResult(this.hero, this.platforms[i], prevPoint);
 
       if (collisionResult.vertical) {
-        this.#hero.stay();
+        this.hero.stay();
       }
     }
   }
@@ -87,7 +89,7 @@ export default class Game {
     return collisionResult;
   }
 
-  isCheckAABB(entity, area) {
+  private isCheckAABB(entity, area): boolean {
     return (
       entity.x < area.x + area.width &&
       entity.x + entity.width > area.x &&
