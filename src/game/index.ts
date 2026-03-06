@@ -1,14 +1,17 @@
 import type { Application } from 'pixi.js';
 
 import Hero from '../entities/hero';
+import type Platform from '../entities/platform';
 import PlatformFactory from '../entities/platform/PlatformFactory';
+import getCollisionResult from '../shared/helpers/getCollisionResult';
+import { TPrevPoint } from '../shared/types';
 
 import KeyboardProcessor from './KeyboardProcessor';
 
 export default class Game {
   private pixiApp: Application;
   private hero: Hero;
-  private platforms = [];
+  private platforms: Platform[] = [];
 
   public keyboardProcessor: KeyboardProcessor;
 
@@ -22,12 +25,44 @@ export default class Game {
 
     const platformFactory = new PlatformFactory(this.pixiApp);
 
-    this.platforms.push(platformFactory.createPlatform({ x: 100, y: 450 }, { width: 10 }));
-    this.platforms.push(platformFactory.createPlatform({ x: 400, y: 520 }, { color: 0xff0000 }));
-    this.platforms.push(platformFactory.createPlatform({ x: 600, y: 450 }));
+    this.platforms.push(platformFactory.createPlatform({ x: 100, y: 400 }, { color: 0x00ff00 }));
+    this.platforms.push(platformFactory.createPlatform({ x: 300, y: 400 }, { color: 0x00ff00 }));
+    this.platforms.push(platformFactory.createPlatform({ x: 500, y: 400 }, { color: 0x00ff00 }));
+    this.platforms.push(platformFactory.createPlatform({ x: 700, y: 400 }, { color: 0x00ff00 }));
+    this.platforms.push(platformFactory.createPlatform({ x: 900, y: 400 }, { color: 0x00ff00 }));
+
+    this.platforms.push(platformFactory.createPlatform({ x: 300, y: 600 }, { color: 0x00ff00 }));
+
+    this.platforms.push(platformFactory.createPlatform({ x: 0, y: 738 }, { color: 0x00ff00 }));
+    this.platforms.push(platformFactory.createPlatform({ x: 200, y: 738 }, { color: 0x00ff00 }));
+    this.platforms.push(platformFactory.createPlatform({ x: 400, y: 708 }, { color: 0x00ff00 }));
 
     this.keyboardProcessor = new KeyboardProcessor();
 
+    this.setKeys();
+  }
+
+  public update(): void {
+    const prevPoint: TPrevPoint = {
+      x: this.hero.x,
+      y: this.hero.y,
+    };
+
+    this.hero.update();
+
+    for (let i = 0; i < this.platforms.length; i++) {
+      if (this.hero.isJumpState()) continue;
+
+      const platformCollision = getCollisionResult(this.hero.getRect(), this.platforms[i].getRect(), prevPoint);
+
+      if (platformCollision.vertical) {
+        this.hero.y = prevPoint.y;
+        this.hero.stay();
+      }
+    }
+  }
+
+  private setKeys(): void {
     this.keyboardProcessor.getButton('KeyS').executeDown = () => {
       this.hero.jump();
     };
@@ -43,58 +78,5 @@ export default class Game {
     this.keyboardProcessor.getButton('ArrowRight').executeUp = () => {
       this.hero.stopRightMove();
     };
-  }
-
-  public update(): void {
-    const prevPoint = {
-      x: this.hero.x,
-      y: this.hero.y,
-    };
-
-    this.hero.update();
-
-    for (let i = 0; i < this.platforms.length; i++) {
-      const collisionResult = this.getPlatformCollisionResult(this.hero, this.platforms[i], prevPoint);
-
-      if (collisionResult.vertical) {
-        this.hero.stay();
-      }
-    }
-  }
-
-  getPlatformCollisionResult(entity, platform, prevPoint) {
-    const collisionResult = {
-      horizontal: false,
-      vertical: false,
-    };
-
-    if (!this.isCheckAABB(entity, platform)) {
-      return collisionResult;
-    }
-
-    const currY = entity.y;
-    // eslint-disable-next-line no-param-reassign
-    entity.y = prevPoint.y;
-
-    if (!this.isCheckAABB(entity, platform)) {
-      collisionResult.vertical = true;
-      return collisionResult;
-    }
-    // eslint-disable-next-line no-param-reassign
-    entity.y = currY;
-    // eslint-disable-next-line no-param-reassign
-    entity.x = prevPoint.x;
-
-    collisionResult.horizontal = true;
-    return collisionResult;
-  }
-
-  private isCheckAABB(entity, area): boolean {
-    return (
-      entity.x < area.x + area.width &&
-      entity.x + entity.width > area.x &&
-      entity.y < area.y + area.height &&
-      entity.y + entity.height > area.y
-    );
   }
 }

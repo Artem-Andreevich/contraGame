@@ -1,15 +1,23 @@
 import { Container, Graphics } from 'pixi.js';
 
-export enum HERO_STATE {
-  STAY = 'stay',
-  // JUMP = 'jump',
-}
+import { TArea } from '../../shared/types';
 
 type TDirectionContext = {
   LEFT: number;
   RIGHT: number;
 };
 
+type THeroState = {
+  STAY: string;
+  JUMP: string;
+  FLY_DOWN: string;
+};
+
+const HERO_STATE: THeroState = {
+  STAY: 'stay',
+  JUMP: 'jump',
+  FLY_DOWN: 'flyDown',
+};
 export default class Hero extends Container {
   private readonly GRAVITY_FORCE = 0.1;
   private readonly JUMP_FORCE = 5;
@@ -28,7 +36,13 @@ export default class Hero extends Container {
     RIGHT: 0,
   };
 
-  private STATE: HERO_STATE = HERO_STATE.STAY;
+  private STATE = HERO_STATE.STAY;
+  public RECT: TArea = {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+  };
 
   constructor() {
     super();
@@ -49,8 +63,21 @@ export default class Hero extends Container {
     this.VELOCITY_X = this.MOVEMENT.x * this.SPEED;
     this.x += this.VELOCITY_X;
 
+    if (this.VELOCITY_Y > 0 && this.isJumpState()) {
+      this.STATE = HERO_STATE.FLY_DOWN;
+    }
+
     this.VELOCITY_Y += this.GRAVITY_FORCE;
     this.y += this.VELOCITY_Y;
+  }
+
+  public getRect() {
+    this.RECT.x = this.x;
+    this.RECT.y = this.y;
+    this.RECT.width = this.width;
+    this.RECT.height = this.height;
+
+    return this.RECT;
   }
 
   public stay(): void {
@@ -59,10 +86,14 @@ export default class Hero extends Container {
   }
 
   public jump(): void {
-    if (this.STATE === HERO_STATE.JUMP) return;
+    if (this.isJumpState() || this.STATE === HERO_STATE.FLY_DOWN) return;
 
     this.STATE = HERO_STATE.JUMP;
     this.VELOCITY_Y -= this.JUMP_FORCE;
+  }
+
+  public isJumpState(): boolean {
+    return this.STATE === HERO_STATE.JUMP;
   }
 
   private updateMovement(): void {

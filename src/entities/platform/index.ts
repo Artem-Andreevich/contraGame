@@ -1,5 +1,7 @@
 import { Container, Graphics } from 'pixi.js';
 
+import type { TArea } from '../../shared/types';
+
 import type { IPlatformParams } from './type';
 
 export default class Platform extends Container {
@@ -10,6 +12,13 @@ export default class Platform extends Container {
     y: 0,
     w: 300,
     h: 30,
+  };
+
+  public RECT: TArea = {
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
   };
 
   private computedParams: IPlatformParams = {};
@@ -32,5 +41,14 @@ export default class Platform extends Container {
       .stroke();
 
     this.addChild(view);
+  }
+
+  public getRect() {
+    this.RECT.x = this.x;
+    this.RECT.y = this.y;
+    this.RECT.width = this.width;
+    this.RECT.height = this.height;
+
+    return this.RECT;
   }
 }
