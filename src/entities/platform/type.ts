@@ -7,6 +7,7 @@ export interface IPlatformParams {
   h?: number;
   jumpThrough?: boolean;
   type?: 'box' | 'platform';
+  isStepladder?: boolean;
 }
 
 export type TPlatformPosition = {

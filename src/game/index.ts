@@ -36,7 +36,10 @@ export default class Game {
     this.platforms.push(platformFactory.createPlatform({ x: 0, y: 738 }, { color: 0xff0000, jumpThrough: false }));
     this.platforms.push(platformFactory.createPlatform({ x: 200, y: 738 }, { color: 0x00ff00, jumpThrough: false }));
     this.platforms.push(
-      platformFactory.createPlatform({ x: 400, y: 708 }, { color: 0xffccee, jumpThrough: false, type: 'box' }),
+      platformFactory.createPlatform(
+        { x: 400, y: 708 },
+        { color: 0xffccee, jumpThrough: false, type: 'box', isStepladder: true },
+      ),
     );
 
     this.keyboardProcessor = new KeyboardProcessor();
@@ -54,6 +57,10 @@ export default class Game {
 
     for (const platform of this.platforms) {
       const platformCollision = getCollisionResult(this.hero.getRect(), platform.getRect(), prevPoint);
+
+      if (platformCollision.horizontal && platform.IS_STEPLADDER) {
+        this.hero.x = prevPoint.x;
+      }
 
       if (platformCollision.horizontal && platform.TYPE === 'box') {
         this.hero.x = prevPoint.x;

@@ -20,9 +20,9 @@ const HERO_STATE: THeroState = {
   FLY_DOWN: 'flyDown',
 };
 export default class Hero extends Container {
-  private readonly GRAVITY_FORCE = 0.1;
-  private readonly JUMP_FORCE = 5;
-  private readonly SPEED = 2;
+  private readonly GRAVITY_FORCE = 0.2;
+  private readonly SPEED = 3;
+  private readonly JUMP_FORCE = 9;
 
   private VELOCITY_X: number = 0;
   private VELOCITY_Y: number = 0;
@@ -54,9 +54,9 @@ export default class Hero extends Container {
     view
       .setStrokeStyle({
         width: 1,
-        color: 0xff0000,
+        color: 0xfff000,
       })
-      .rect(0, 0, 20, 60)
+      .rect(0, 0, 20, 90)
       .stroke();
 
     this.addChild(view);
