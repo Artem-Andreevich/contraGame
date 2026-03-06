@@ -31,11 +31,11 @@ export default class Game {
     this.platforms.push(platformFactory.createPlatform({ x: 700, y: 400 }, { color: 0x00ff00 }));
     this.platforms.push(platformFactory.createPlatform({ x: 900, y: 400 }, { color: 0x00ff00 }));
 
-    this.platforms.push(platformFactory.createPlatform({ x: 300, y: 600 }, { color: 0x00ff00 }));
+    this.platforms.push(platformFactory.createPlatform({ x: 300, y: 600 }, { color: 0xfdff00 }));
 
-    this.platforms.push(platformFactory.createPlatform({ x: 0, y: 738 }, { color: 0x00ff00 }));
-    this.platforms.push(platformFactory.createPlatform({ x: 200, y: 738 }, { color: 0x00ff00 }));
-    this.platforms.push(platformFactory.createPlatform({ x: 400, y: 708 }, { color: 0x00ff00 }));
+    this.platforms.push(platformFactory.createPlatform({ x: 0, y: 738 }, { color: 0xff0000, jumpThrough: false }));
+    this.platforms.push(platformFactory.createPlatform({ x: 200, y: 738 }, { color: 0x00ff00, jumpThrough: false }));
+    this.platforms.push(platformFactory.createPlatform({ x: 400, y: 708 }, { color: 0xffccee, jumpThrough: false }));
 
     this.keyboardProcessor = new KeyboardProcessor();
 
@@ -50,12 +50,13 @@ export default class Game {
 
     this.hero.update();
 
-    for (let i = 0; i < this.platforms.length; i++) {
+    for (const platform of this.platforms) {
       if (this.hero.isJumpState()) continue;
 
-      const platformCollision = getCollisionResult(this.hero.getRect(), this.platforms[i].getRect(), prevPoint);
+      const platformCollision = getCollisionResult(this.hero.getRect(), platform.getRect(), prevPoint);
 
       if (platformCollision.vertical) {
+        this.hero.CURRENT_PLATFORM_THROUGH = platform.JUMP_THROUGH;
         this.hero.y = prevPoint.y;
         this.hero.stay();
       }
@@ -64,7 +65,11 @@ export default class Game {
 
   private setKeys(): void {
     this.keyboardProcessor.getButton('KeyS').executeDown = () => {
-      this.hero.jump();
+      if (this.keyboardProcessor.isButtonPressed('ArrowDown')) {
+        this.hero.jumpDown();
+      } else {
+        this.hero.jump();
+      }
     };
     this.keyboardProcessor.getButton('ArrowLeft').executeDown = () => {
       this.hero.startLeftMove();

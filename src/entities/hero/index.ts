@@ -37,6 +37,8 @@ export default class Hero extends Container {
   };
 
   private STATE = HERO_STATE.STAY;
+
+  public CURRENT_PLATFORM_THROUGH = false;
   public RECT: TArea = {
     x: 0,
     y: 0,
@@ -90,6 +92,11 @@ export default class Hero extends Container {
 
     this.STATE = HERO_STATE.JUMP;
     this.VELOCITY_Y -= this.JUMP_FORCE;
+  }
+
+  public jumpDown(): void {
+    if (!this.CURRENT_PLATFORM_THROUGH) return;
+    this.STATE = HERO_STATE.JUMP;
   }
 
   public isJumpState(): boolean {

@@ -12,6 +12,7 @@ export default class Platform extends Container {
     y: 0,
     w: 300,
     h: 30,
+    jumpThrough: true,
   };
 
   public RECT: TArea = {
@@ -20,6 +21,8 @@ export default class Platform extends Container {
     width: 0,
     height: 0,
   };
+
+  public JUMP_THROUGH = true;
 
   private computedParams: IPlatformParams = {};
 
@@ -30,6 +33,8 @@ export default class Platform extends Container {
       ...this.DEFAULT_PARAMS,
       ...params,
     };
+
+    this.JUMP_THROUGH = this.computedParams.jumpThrough;
 
     const view = new Graphics();
     view

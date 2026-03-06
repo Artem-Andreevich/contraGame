@@ -44,7 +44,7 @@ export default class KeyboardProcessor {
     button.isDown = false;
   }
 
-  private isButtonPressed(keyCode: TKeyCode): IButton['isDown'] {
+  public isButtonPressed(keyCode: TKeyCode): IButton['isDown'] {
     return this.getButton(keyCode).isDown;
   }
 }
