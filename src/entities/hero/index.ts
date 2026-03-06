@@ -1,6 +1,7 @@
 import { Container, Graphics } from 'pixi.js';
 
 import { TArea } from '../../shared/types';
+import type Platform from '../platform';
 
 type TDirectionContext = {
   LEFT: number;
@@ -38,7 +39,7 @@ export default class Hero extends Container {
 
   private STATE = HERO_STATE.STAY;
 
-  public CURRENT_PLATFORM_THROUGH = false;
+  public CURRENT_PLATFORM: Platform | null = null;
   public RECT: TArea = {
     x: 0,
     y: 0,
@@ -82,9 +83,11 @@ export default class Hero extends Container {
     return this.RECT;
   }
 
-  public stay(): void {
+  public stay(platformY: number): void {
     this.STATE = HERO_STATE.STAY;
     this.VELOCITY_Y = 0;
+
+    this.y = platformY - this.height;
   }
 
   public jump(): void {
@@ -95,7 +98,7 @@ export default class Hero extends Container {
   }
 
   public jumpDown(): void {
-    if (!this.CURRENT_PLATFORM_THROUGH) return;
+    if (!this.CURRENT_PLATFORM.JUMP_THROUGH) return;
     this.STATE = HERO_STATE.JUMP;
   }
 

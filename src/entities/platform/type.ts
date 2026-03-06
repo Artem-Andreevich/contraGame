@@ -6,6 +6,7 @@ export interface IPlatformParams {
   w?: number;
   h?: number;
   jumpThrough?: boolean;
+  type?: 'box' | 'platform';
 }
 
 export type TPlatformPosition = {
