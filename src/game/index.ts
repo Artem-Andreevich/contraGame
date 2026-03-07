@@ -18,10 +18,9 @@ export default class Game {
   constructor(app: Application) {
     this.pixiApp = app;
 
-    this.hero = new Hero();
+    this.hero = new Hero(this.pixiApp.stage);
     this.hero.x = 100;
     this.hero.y = 100;
-    this.pixiApp.stage.addChild(this.hero);
 
     const platformFactory = new PlatformFactory(this.pixiApp);
 
@@ -53,7 +52,7 @@ export default class Game {
     this.hero.update();
 
     for (const platform of this.platforms) {
-      const platformCollision = getCollisionResult(this.hero.getRect(), platform.getRect(), prevPoint);
+      const platformCollision = getCollisionResult(this.hero.collisionBox, platform.getRect(), prevPoint);
 
       if (platformCollision.horizontal && platform.TYPE === 'box') {
         this.hero.x = prevPoint.x;
