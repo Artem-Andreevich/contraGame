@@ -14,6 +14,7 @@ export default class Platform extends Container {
     h: 30,
     jumpThrough: true,
     type: 'platform',
+    isStepladder: false,
   };
 
   public RECT: TArea = {
@@ -25,6 +26,7 @@ export default class Platform extends Container {
 
   public JUMP_THROUGH: boolean;
   public TYPE: IPlatformParams['type'];
+  public IS_STEPLADDER: IPlatformParams['isStepladder'];
 
   private computedParams: IPlatformParams = {};
 
@@ -36,6 +38,7 @@ export default class Platform extends Container {
       ...params,
     };
 
+    this.IS_STEPLADDER = this.computedParams.isStepladder;
     this.JUMP_THROUGH = this.computedParams.jumpThrough;
     this.TYPE = this.computedParams.type;
 
