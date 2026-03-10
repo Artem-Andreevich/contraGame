@@ -1,6 +1,6 @@
 import type { Application } from 'pixi.js';
 
-import { TArea } from '../../shared/types';
+import { TArea, TPressedArrowContext } from '../../shared/types';
 import type Platform from '../platform';
 
 import View from './view';
@@ -49,12 +49,17 @@ export default class Hero {
     height: 0,
   };
 
+  private isPressedUp: boolean = false;
+  private isPressedLay: boolean = false;
+
   private VIEW: View;
 
   constructor(stage: Application['stage']) {
     this.VIEW = new View();
-
     stage.addChild(this.VIEW);
+
+    this.STATE = HERO_STATE.JUMP;
+    this.VIEW.showJumpView();
   }
 
   get collisionBox() {
@@ -79,7 +84,8 @@ export default class Hero {
     this.VELOCITY_X = this.MOVEMENT.x * this.SPEED;
     this.x += this.VELOCITY_X;
 
-    if (this.VELOCITY_Y > 0 && this.isJumpState()) {
+    if (this.VELOCITY_Y > 0) {
+      if (!(this.isJumpState() || this.isFlyDownState())) this.VIEW.showFallView();
       this.STATE = HERO_STATE.FLY_DOWN;
     }
 
@@ -88,6 +94,17 @@ export default class Hero {
   }
 
   public stay(platformY: number): void {
+    if (this.isJumpState() || this.isFlyDownState()) {
+      const arrowPressedContext: TPressedArrowContext = {
+        pressedArrowRight: this.MOVEMENT.x === 1,
+        pressedArrowLeft: this.MOVEMENT.x === -1,
+        pressedArrowDown: this.isPressedLay,
+        pressedArrowUp: this.isPressedUp,
+      };
+      this.STATE = HERO_STATE.STAY;
+
+      this.setView(arrowPressedContext);
+    }
     this.STATE = HERO_STATE.STAY;
     this.VELOCITY_Y = 0;
 
@@ -95,19 +112,27 @@ export default class Hero {
   }
 
   public jump(): void {
-    if (this.isJumpState() || this.STATE === HERO_STATE.FLY_DOWN) return;
+    if (this.isJumpState() || this.isFlyDownState()) return;
 
     this.STATE = HERO_STATE.JUMP;
     this.VELOCITY_Y -= this.JUMP_FORCE;
+
+    this.VIEW.showJumpView();
   }
 
   public jumpDown(): void {
     if (!this.CURRENT_PLATFORM.JUMP_THROUGH) return;
     this.STATE = HERO_STATE.JUMP;
+
+    this.VIEW.showFallView();
   }
 
   public isJumpState(): boolean {
     return this.STATE === HERO_STATE.JUMP;
+  }
+
+  public isFlyDownState(): boolean {
+    return this.STATE === HERO_STATE.FLY_DOWN;
   }
 
   private updateMovement(): void {
@@ -132,5 +157,51 @@ export default class Hero {
   public stopRightMove(): void {
     this.DIRECTION_CONTEXT.RIGHT = 0;
     this.updateMovement();
+  }
+
+  public setView(arrowPressedContext: TPressedArrowContext) {
+    const isRun = arrowPressedContext.pressedArrowRight || arrowPressedContext.pressedArrowLeft;
+    const isRunUp = isRun && arrowPressedContext.pressedArrowUp;
+    const isRunDown = isRun && arrowPressedContext.pressedArrowDown;
+    const isStayUp = arrowPressedContext.pressedArrowUp;
+    const isLay = arrowPressedContext.pressedArrowDown;
+
+    this.VIEW.flipView(this.MOVEMENT.x);
+    this.isPressedUp = arrowPressedContext.pressedArrowUp;
+    this.isPressedLay = arrowPressedContext.pressedArrowDown;
+
+    if (this.isJumpState() || this.isFlyDownState()) return;
+
+    if (isRunUp) {
+      this.VIEW.showRunUpView();
+      return;
+    }
+
+    if (isRunDown) {
+      this.VIEW.showRunDownView();
+      return;
+    }
+
+    if (isRun) {
+      this.VIEW.showRunView();
+      return;
+    }
+
+    if (isStayUp) {
+      this.VIEW.showStayUpView();
+      return;
+    }
+
+    if (isStayUp) {
+      this.VIEW.showStayUpView();
+      return;
+    }
+
+    if (isLay) {
+      this.VIEW.showLayView();
+      return;
+    }
+
+    this.VIEW.showStayView();
   }
 }

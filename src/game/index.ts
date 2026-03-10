@@ -4,7 +4,7 @@ import Hero from '../entities/hero';
 import type Platform from '../entities/platform';
 import PlatformFactory from '../entities/platform/PlatformFactory';
 import getCollisionResult from '../shared/helpers/getCollisionResult';
-import { TPrevPoint } from '../shared/types';
+import { TPressedArrowContext, TPrevPoint } from '../shared/types';
 
 import KeyboardProcessor from './KeyboardProcessor';
 
@@ -70,23 +70,51 @@ export default class Game {
 
   private setKeys(): void {
     this.keyboardProcessor.getButton('KeyS').executeDown = () => {
-      if (this.keyboardProcessor.isButtonPressed('ArrowDown')) {
+      const isRun =
+        this.keyboardProcessor.isButtonPressed('ArrowLeft') || this.keyboardProcessor.isButtonPressed('ArrowRight');
+
+      if (this.keyboardProcessor.isButtonPressed('ArrowDown') && !isRun) {
         this.hero.jumpDown();
       } else {
         this.hero.jump();
       }
     };
-    this.keyboardProcessor.getButton('ArrowLeft').executeDown = () => {
+
+    const arrowLeft = this.keyboardProcessor.getButton('ArrowLeft');
+    arrowLeft.executeDown = () => {
       this.hero.startLeftMove();
+      this.hero.setView(this.getPressedArrowContext());
     };
-    this.keyboardProcessor.getButton('ArrowLeft').executeUp = () => {
+    arrowLeft.executeUp = () => {
       this.hero.stopLeftMove();
+      this.hero.setView(this.getPressedArrowContext());
     };
-    this.keyboardProcessor.getButton('ArrowRight').executeDown = () => {
+
+    const arrowRight = this.keyboardProcessor.getButton('ArrowRight');
+    arrowRight.executeDown = () => {
       this.hero.startRightMove();
+      this.hero.setView(this.getPressedArrowContext());
     };
-    this.keyboardProcessor.getButton('ArrowRight').executeUp = () => {
+    arrowRight.executeUp = () => {
       this.hero.stopRightMove();
+      this.hero.setView(this.getPressedArrowContext());
+    };
+
+    const arrowUp = this.keyboardProcessor.getButton('ArrowUp');
+    arrowUp.executeDown = () => this.hero.setView(this.getPressedArrowContext());
+    arrowUp.executeUp = () => this.hero.setView(this.getPressedArrowContext());
+
+    const arrowDown = this.keyboardProcessor.getButton('ArrowDown');
+    arrowDown.executeDown = () => this.hero.setView(this.getPressedArrowContext());
+    arrowDown.executeUp = () => this.hero.setView(this.getPressedArrowContext());
+  }
+
+  private getPressedArrowContext(): TPressedArrowContext {
+    return {
+      pressedArrowLeft: this.keyboardProcessor.isButtonPressed('ArrowLeft'),
+      pressedArrowRight: this.keyboardProcessor.isButtonPressed('ArrowRight'),
+      pressedArrowUp: this.keyboardProcessor.isButtonPressed('ArrowUp'),
+      pressedArrowDown: this.keyboardProcessor.isButtonPressed('ArrowDown'),
     };
   }
 }
