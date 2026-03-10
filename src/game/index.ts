@@ -34,7 +34,9 @@ export default class Game {
     this.platforms.push(platformFactory.createPlatform({ x: 300, y: 600 }, { color: 0xfdff00 }));
 
     this.platforms.push(platformFactory.createPlatform({ x: 0, y: 738 }, { color: 0xff0000, jumpThrough: false }));
-    this.platforms.push(platformFactory.createPlatform({ x: 200, y: 738 }, { color: 0x00ff00, jumpThrough: false }));
+    this.platforms.push(
+      platformFactory.createPlatform({ x: 200, y: 738 }, { color: 0x00ff00, jumpThrough: false, isStepladder: true }),
+    );
     this.platforms.push(
       platformFactory.createPlatform(
         { x: 400, y: 708 },
@@ -59,7 +61,7 @@ export default class Game {
       const platformCollision = getCollisionResult(this.hero.getRect(), platform.getRect(), prevPoint);
 
       if (platformCollision.horizontal && platform.IS_STEPLADDER) {
-        this.hero.x = prevPoint.x;
+        this.hero.stay(platform.y);
       }
 
       if (platformCollision.horizontal && platform.TYPE === 'box') {
