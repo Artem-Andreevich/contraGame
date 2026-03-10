@@ -25,11 +25,10 @@ export default class KeyboardProcessor {
 
     if (!button) return;
 
+    button.isDown = true;
     if (Object.prototype.hasOwnProperty.call(button, 'executeDown')) {
       button.executeDown();
     }
-
-    button.isDown = true;
   }
 
   public onKeyUp(keyCode: TKeyCode) {
@@ -37,11 +36,10 @@ export default class KeyboardProcessor {
 
     if (!button) return;
 
+    button.isDown = false;
     if (Object.prototype.hasOwnProperty.call(button, 'executeUp')) {
       button.executeUp();
     }
-
-    button.isDown = false;
   }
 
   public isButtonPressed(keyCode: TKeyCode): IButton['isDown'] {

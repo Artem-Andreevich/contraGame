@@ -9,3 +9,10 @@ export type TPrevPoint = {
   x: number;
   y: number;
 };
+
+export type TPressedArrowContext = {
+  pressedArrowLeft: boolean;
+  pressedArrowRight: boolean;
+  pressedArrowUp: boolean;
+  pressedArrowDown: boolean;
+};
