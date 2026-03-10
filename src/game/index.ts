@@ -1,4 +1,4 @@
-import type { Application } from 'pixi.js';
+import { Application, Container } from 'pixi.js';
 
 import Hero from '../entities/hero';
 import type Platform from '../entities/platform';
@@ -6,6 +6,7 @@ import PlatformFactory from '../entities/platform/PlatformFactory';
 import getCollisionResult from '../shared/helpers/getCollisionResult';
 import { TPressedArrowContext, TPrevPoint } from '../shared/types';
 
+import Camera from './Camera';
 import KeyboardProcessor from './KeyboardProcessor';
 
 export default class Game {
@@ -14,15 +15,20 @@ export default class Game {
   private platforms: Platform[] = [];
 
   public keyboardProcessor: KeyboardProcessor;
+  private camera: Camera;
+  private worldContainer: Container;
 
   constructor(app: Application) {
     this.pixiApp = app;
 
-    this.hero = new Hero(this.pixiApp.stage);
+    this.worldContainer = new Container();
+    this.pixiApp.stage.addChild(this.worldContainer);
+
+    this.hero = new Hero(this.worldContainer);
     this.hero.x = 100;
     this.hero.y = 100;
 
-    const platformFactory = new PlatformFactory(this.pixiApp);
+    const platformFactory = new PlatformFactory(this.worldContainer);
 
     this.platforms.push(platformFactory.createPlatform({ x: 100, y: 400 }, { color: 0x00ff00 }));
     this.platforms.push(platformFactory.createPlatform({ x: 300, y: 400 }, { color: 0x00ff00 }));
@@ -43,6 +49,13 @@ export default class Game {
       ),
     );
 
+    this.camera = new Camera({
+      target: this.hero,
+      world: this.worldContainer,
+      screenSize: this.pixiApp.screen,
+      maxScrollWidth: this.worldContainer.width,
+      isBackScrollX: false,
+    });
     this.keyboardProcessor = new KeyboardProcessor();
 
     this.setKeys();
@@ -55,6 +68,7 @@ export default class Game {
     };
 
     this.hero.update();
+    this.camera.update();
 
     for (const platform of this.platforms) {
       const platformCollision = getCollisionResult(this.hero.collisionBox, platform.getRect(), prevPoint);

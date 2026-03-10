@@ -1,13 +1,13 @@
-import type { Application } from 'pixi.js';
+import type { Container } from 'pixi.js';
 
 import Platform from './index';
 import { IPlatformParams, TPlatformPosition } from './type';
 
 export default class PlatformFactory {
-  private pixiApp: Application;
+  private container: Container;
 
-  constructor(app: Application) {
-    this.pixiApp = app;
+  constructor(container: Container) {
+    this.container = container;
   }
 
   public createPlatform(position: TPlatformPosition, params?: IPlatformParams) {
@@ -15,7 +15,7 @@ export default class PlatformFactory {
     platform.x = position.x;
     platform.y = position.y;
 
-    this.pixiApp.stage.addChild(platform);
+    this.container.addChild(platform);
     return platform;
   }
 }
